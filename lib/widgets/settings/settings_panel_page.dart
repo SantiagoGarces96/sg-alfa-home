@@ -25,6 +25,8 @@ import 'package:flauncher/widgets/settings/interface_settings_page.dart';
 import 'package:flauncher/widgets/settings/update_dialogs.dart';
 import 'package:flauncher/widgets/settings/general_settings_page.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
+import 'package:flauncher/widgets/settings/sg_alfa_protection_page.dart';
+import 'package:flauncher/widgets/settings/sg_alfa_protection_page.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +51,13 @@ class SettingsPanelPage extends StatelessWidget {
               children: [
                 FocusableSettingsTile(
                   autofocus: true,
+                  showChevron: true,
+                  leading: const Icon(Icons.shield_outlined),
+                  title: Text("Protección SG Alfa", style: Theme.of(context).textTheme.bodyMedium),
+                  subtitle: Text("Anuncios, pop-ups y automatizaciones", style: Theme.of(context).textTheme.bodySmall),
+                  onPressed: () => Navigator.of(context).pushNamed(SgAlfaProtectionPage.routeName),
+                ),
+                FocusableSettingsTile(
                   showChevron: true,
                   leading: const Icon(Icons.apps),
                   title: Text(localizations.applications, style: Theme.of(context).textTheme.bodyMedium),

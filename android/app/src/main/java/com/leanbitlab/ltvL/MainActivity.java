@@ -81,6 +81,23 @@ public class MainActivity extends FlutterActivity {
     private static final String COLUMN_ASPECT_RATIO = "aspect_ratio";
 
     private MethodChannel methodChannel;
+    private tv.sgalfa.home.ProtectionChannel protectionChannel;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // SG Alfa: vuelve a encender el bloqueo de anuncios si estaba puesto.
+        try {
+            tv.sgalfa.home.ProtectionChannel.resumeIfWanted(this);
+        } catch (Exception ignored) {
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (protectionChannel != null && protectionChannel.onActivityResult(requestCode, resultCode)) return;
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     // singleTask: a repeated HOME press with the launcher on screen arrives here, not in onResume.
     @Override
@@ -98,6 +115,9 @@ public class MainActivity extends FlutterActivity {
         super.configureFlutterEngine(flutterEngine);
 
         BinaryMessenger messenger = flutterEngine.getDartExecutor().getBinaryMessenger();
+
+        protectionChannel = new tv.sgalfa.home.ProtectionChannel(this);
+        protectionChannel.register(messenger);
 
         methodChannel = new MethodChannel(messenger, METHOD_CHANNEL);
         methodChannel.setMethodCallHandler((call, result) -> {

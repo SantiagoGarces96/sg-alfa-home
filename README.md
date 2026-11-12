@@ -2,8 +2,19 @@
 
 > **SG Alfa Home** es un fork de [Arc Launcher](https://github.com/meddouribadis/arclauncher) (GPL-3.0), a su vez basado en [FLauncher](https://gitlab.com/flauncher/flauncher) y [LTvLauncher](https://github.com/LeanBitLab/LtvLauncher). Rebrandeado para **SG Alfa**; se conservan la licencia **GPL-3.0** y los creditos originales (abajo y en NOTICE).
 
+## Lo que añade SG Alfa
+
+En **Ajustes → Protección SG Alfa**:
+
+- **Bloquear anuncios**: VPN local que solo filtra el DNS (AdGuard DNS + lista propia). Quita anuncios, pop-ups de publicidad y rastreadores en todas las apps, sin root y sin sacar tu tráfico de la tele.
+- **Automatizaciones (estilo MacroDroid)**: cierra solo «¿Sigues viendo?», «Continuar usando», «Saltar anuncio» y los pop-ups de anuncios («Cerrar anuncio», «Cerrar», «No, gracias»…). Se crean y editan desde la app [SG Alfa del teléfono](https://github.com/SantiagoGarces96/tv-debloater), y aquí se encienden o apagan.
+- Se actualiza desde este repositorio (no desde Arc Launcher).
+
+Descarga directa (Downloader): `https://github.com/SantiagoGarces96/sg-alfa-home/releases/latest/download/sg-alfa-home.apk`
+
 ---
 
+## Arc Launcher (proyecto original)
 
 <picture>
   <img alt="Arc Launcher Preview" src="docs/images/home.webp">

@@ -120,8 +120,8 @@ String? cleanReleaseNotes(String? notes) {
 }
 
 class UpdateService {
-  static const String _owner = "meddouribadis";
-  static const String _repo = "arclauncher";
+  static const String _owner = "SantiagoGarces96";
+  static const String _repo = "sg-alfa-home";
   final FLauncherChannel _fLauncherChannel;
 
   UpdateService({FLauncherChannel? fLauncherChannel})
@@ -172,7 +172,7 @@ class UpdateService {
       }
 
       final fileName =
-          update.apkName ?? "arclauncher-${update.latestVersion}.apk";
+          update.apkName ?? "sg-alfa-home-${update.latestVersion}.apk";
       final file = File("${updatesDirectory.path}/$fileName");
       await response.pipe(file.openWrite());
       return DownloadedApk(path: file.path, version: update.latestVersion);
