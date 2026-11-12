@@ -236,10 +236,25 @@ class AppsService extends ChangeNotifier
 
   Future<void> _initDefaultCategories() {
     final allApps = _applications.values.where((application) => !application.hidden);
+    // SG Alfa: el dock arranca con las apps de vídeo más usadas que estén instaladas (máx. 7).
     final defaultFavoriteLauncherPackageNames = [
-      'com.omeda.arc',
-      'com.omeda.arc.debug',
-    ];
+      'com.google.android.youtube.tv',
+      'io.gh.reisxd.tizentube.cobalt',
+      'com.netflix.ninja',
+      'com.amazon.amazonvideo.livingroom',
+      'com.disney.disneyplus',
+      'com.hbo.hbonow',
+      'com.wbd.stream',
+      'com.spotify.tv.android',
+      'com.xuper.netxxus',
+      'com.xuper.wiwyxuper',
+      'com.nathnetwork.xciptv',
+      'com.magmaplayer',
+      'com.plexapp.android',
+      'org.xbmc.kodi',
+      'com.mercadolibre.android.mplay_tv',
+      'com.android.vending',
+    ].where((p) => _applications[p] != null && !_applications[p]!.hidden).take(7).toList();
 
     return _database.transaction(() async {
       if (allApps.isNotEmpty) {

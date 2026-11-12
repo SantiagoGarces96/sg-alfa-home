@@ -29,6 +29,9 @@ import 'package:flauncher/providers/unsplash_slideshow.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
 
+/// Fondo por defecto de SG Alfa Home (generado para el proyecto, sin derechos de terceros).
+const String kSgAlfaDefaultWallpaper = 'assets/sgalfa/wallpaper.jpg';
+
 class WallpaperService extends ChangeNotifier {
   final SettingsService _settingsService;
   final FLauncherChannel _channel = FLauncherChannel();
@@ -290,6 +293,9 @@ class WallpaperService extends ChangeNotifier {
       }
     } else if (_wallpaperFile.existsSync()) {
       newWallpaper = FileImage(_wallpaperFile);
+    } else if (_settingsService.gradientUuid == null) {
+      // SG Alfa: fondo oscuro propio mientras no elijas otro fondo o degradado.
+      newWallpaper = const AssetImage(kSgAlfaDefaultWallpaper);
     }
 
     if (_wallpaper != newWallpaper || videoFile != null || force) {
