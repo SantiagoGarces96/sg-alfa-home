@@ -1,4 +1,9 @@
-# Arc Launcher
+# SG Alfa Home
+
+> **SG Alfa Home** es un fork de [Arc Launcher](https://github.com/meddouribadis/arclauncher) (GPL-3.0), a su vez basado en [FLauncher](https://gitlab.com/flauncher/flauncher) y [LTvLauncher](https://github.com/LeanBitLab/LtvLauncher). Rebrandeado para **SG Alfa**; se conservan la licencia **GPL-3.0** y los creditos originales (abajo y en NOTICE).
+
+---
+
 
 <picture>
   <img alt="Arc Launcher Preview" src="docs/images/home.webp">

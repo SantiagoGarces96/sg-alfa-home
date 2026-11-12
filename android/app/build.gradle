@@ -64,7 +64,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.omeda.arc"
+        applicationId "tv.sgalfa.home"
         compileSdk 36
         minSdkVersion flutter.minSdkVersion
         targetSdk 35
