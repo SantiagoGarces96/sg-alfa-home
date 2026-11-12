@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get aboutFlauncher => 'About Arc Launcher';
+  String get aboutFlauncher => 'About SG Alfa Home';
 
   @override
   String get addCategory => 'Add category';

@@ -43,6 +43,48 @@ public final class ProtectionChannel {
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                         result.success(true);
                         break;
+                    case "getMacrosFull":
+                        result.success(macrosFull(AutoClickService.load(activity)));
+                        break;
+                    case "getTemplates":
+                        result.success(macrosFull(Macros.templates()));
+                        break;
+                    case "describe":
+                        result.success(Macros.describe(fromMap(call.arguments())));
+                        break;
+                    case "validate":
+                        result.success(Macros.validate(fromMap(call.arguments())));
+                        break;
+                    case "saveMacro": {
+                        Macros.Macro m = fromMap(call.arguments());
+                        String error = Macros.validate(m);
+                        if (error != null) {
+                            result.error("invalid", error, null);
+                            break;
+                        }
+                        List<Macros.Macro> list = new ArrayList<>(AutoClickService.load(activity));
+                        boolean replaced = false;
+                        for (int i = 0; i < list.size(); i++) {
+                            if (list.get(i).id.equals(m.id)) {
+                                list.set(i, m);
+                                replaced = true;
+                            }
+                        }
+                        if (!replaced) list.add(m);
+                        AutoClickService.save(activity, list);
+                        result.success(macrosFull(list));
+                        break;
+                    }
+                    case "deleteMacro": {
+                        String id = call.arguments();
+                        List<Macros.Macro> list = new ArrayList<>(AutoClickService.load(activity));
+                        for (int i = list.size() - 1; i >= 0; i--) {
+                            if (list.get(i).id.equals(id)) list.remove(i);
+                        }
+                        AutoClickService.save(activity, list);
+                        result.success(macrosFull(list));
+                        break;
+                    }
                     case "setMacroEnabled": {
                         String id = call.argument("id");
                         Boolean on = call.argument("enabled");
@@ -81,6 +123,54 @@ public final class ProtectionChannel {
         }
         m.put("macros", list);
         return m;
+    }
+
+    /** Automatizaciones completas para el editor de la tele. */
+    private static List<Map<String, Object>> macrosFull(List<Macros.Macro> macros) {
+        List<Map<String, Object>> out = new ArrayList<>();
+        for (Macros.Macro m : macros) {
+            Map<String, Object> o = new HashMap<>();
+            o.put("id", m.id);
+            o.put("name", m.name);
+            o.put("enabled", m.enabled);
+            o.put("trigger", m.trigger);
+            o.put("text", m.text);
+            o.put("context", new ArrayList<>(m.context));
+            o.put("action", m.action);
+            o.put("app", m.app);
+            o.put("delaySeconds", m.delaySeconds);
+            o.put("description", Macros.describe(m));
+            out.add(o);
+        }
+        return out;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Macros.Macro fromMap(Object raw) {
+        Map<String, Object> o = raw instanceof Map ? (Map<String, Object>) raw : new HashMap<>();
+        List<String> ctx = new ArrayList<>();
+        Object c = o.get("context");
+        if (c instanceof List) {
+            for (Object x : (List<Object>) c) {
+                if (x != null && !x.toString().trim().isEmpty()) ctx.add(x.toString().trim());
+            }
+        }
+        Object delay = o.get("delaySeconds");
+        String id = str(o.get("id"));
+        return new Macros.Macro(
+                id.isEmpty() ? java.util.UUID.randomUUID().toString().substring(0, 8) : id,
+                str(o.get("name")).trim(),
+                !Boolean.FALSE.equals(o.get("enabled")),
+                "TEXT".equals(o.get("trigger")) ? "TEXT" : "BUTTON",
+                str(o.get("text")).trim(),
+                ctx,
+                "BACK".equals(o.get("action")) ? "BACK" : "HOME".equals(o.get("action")) ? "HOME" : "CLICK",
+                str(o.get("app")).trim(),
+                delay instanceof Number ? ((Number) delay).intValue() : 0);
+    }
+
+    private static String str(Object o) {
+        return o == null ? "" : o.toString();
     }
 
     private void setMacroEnabled(String id, boolean on) {

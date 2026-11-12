@@ -26,7 +26,6 @@ import 'package:flauncher/widgets/settings/update_dialogs.dart';
 import 'package:flauncher/widgets/settings/general_settings_page.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
 import 'package:flauncher/widgets/settings/sg_alfa_protection_page.dart';
-import 'package:flauncher/widgets/settings/sg_alfa_protection_page.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';

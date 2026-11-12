@@ -3,6 +3,7 @@
  * GPL-3.0, como el resto del launcher.
  */
 
+import 'package:flauncher/sgalfa/automations_screen.dart';
 import 'package:flauncher/widgets/rounded_switch_list_tile.dart';
 import 'package:flauncher/widgets/settings/focusable_settings_tile.dart';
 import 'package:flauncher/widgets/settings/settings_theme.dart';
@@ -122,11 +123,21 @@ class _SgAlfaProtectionPageState extends State<SgAlfaProtectionPage> with Widget
                       ),
                       onPressed: () => _channel.invokeMethod('openAccessibilitySettings'),
                     ),
+                    FocusableSettingsTile(
+                      showChevron: true,
+                      leading: const Icon(Icons.edit_note),
+                      title: Text("Crear y editar automatizaciones", style: text.bodyMedium),
+                      subtitle: Text("Editor CUANDO / SOLO SI / ENTONCES, aquí en la tele", style: hint),
+                      onPressed: () async {
+                        await SgAutomationsScreen.open(context);
+                        _refresh();
+                      },
+                    ),
                     const SettingsSectionDivider(),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                       child: Text(
-                        "Mis automatizaciones. Créalas y edítalas desde la app SG Alfa del teléfono.",
+                        "Encender o apagar rápido. También se crean desde la app SG Alfa del teléfono.",
                         style: hint,
                       ),
                     ),

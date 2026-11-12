@@ -148,6 +148,17 @@ public final class Macros {
         return screen.contains(wanted) && contextMatches(m, screen);
     }
 
+    /** null si está bien; si no, qué hay que corregir (igual que en el teléfono). */
+    public static String validate(Macro m) {
+        if (m.name == null || m.name.trim().isEmpty()) return "Ponle un nombre.";
+        if (normalize(m.text).length() < 2) return "Escribe el texto que tiene que aparecer.";
+        if ("TEXT".equals(m.trigger) && normalize(m.text).length() < 3) return "El texto tiene que tener al menos 3 letras.";
+        if ("TEXT".equals(m.trigger) && "CLICK".equals(m.action))
+            return "«Pulsar ese botón» solo sirve cuando el disparador es un botón.";
+        if (m.delaySeconds < 0 || m.delaySeconds > 30) return "La espera tiene que estar entre 0 y 30 segundos.";
+        return null;
+    }
+
     /** Frase que explica la automatización (igual que en el teléfono). */
     public static String describe(Macro m) {
         String trigger = "BUTTON".equals(m.trigger)

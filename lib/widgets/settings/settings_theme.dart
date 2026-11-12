@@ -35,11 +35,11 @@ abstract final class SettingsStyle {
   /// Scale applied to the focused row (1.0 means no lift).
   static const double focusScale = 1.018;
 
-  static const double panelWidth = 380;
+  static const double panelWidth = 420;
   static const double panelRadius = 32;
 
-  static const Color panelTop = Color(0xFF2A2A2F);
-  static const Color panelBottom = Color(0xFF161618);
+  static const Color panelTop = Color(0xFF3B3150); // SG Alfa: noche retro
+  static const Color panelBottom = Color(0xFF26203A);
 
   static const Color rowRestFill = Color(0x0AFFFFFF); // white @ 4%
   static const Color rowFocusFill = Color(0x1CFFFFFF); // white @ 11%
@@ -76,10 +76,14 @@ class SettingsPageHeader extends StatelessWidget {
               title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
+              // SG Alfa: títulos en letra retro con sombra de tinta.
               style: textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.1,
+                fontFamily: 'Bungee',
+                fontWeight: FontWeight.w400,
+                letterSpacing: 0.8,
                 height: 1.15,
+                color: const Color(0xFFFFF1D0),
+                shadows: const [Shadow(color: Color(0xFF1D1A16), offset: Offset(2, 2))],
               ),
             ),
           ),

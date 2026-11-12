@@ -111,7 +111,7 @@ class SettingsService extends ChangeNotifier {
 
   bool get showDateInStatusBar => _sharedPreferences.getBool(_showDateInStatusBar) ?? false;
 
-  bool get showTimeInStatusBar => _sharedPreferences.getBool(_showTimeInStatusBar) ?? true;
+  bool get showTimeInStatusBar => _sharedPreferences.getBool(_showTimeInStatusBar) ?? false; // SG Alfa: la hora va en grande en el inicio
 
   String? get gradientUuid => _sharedPreferences.getString(_gradientUuidKey);
 

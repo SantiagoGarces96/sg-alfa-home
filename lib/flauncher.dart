@@ -34,7 +34,8 @@ import 'package:flauncher/widgets/app_card.dart';
 import 'package:flauncher/widgets/cached_blur_backdrop.dart';
 import 'package:flauncher/widgets/category_clean_row.dart';
 import 'package:flauncher/widgets/category_row.dart';
-import 'package:flauncher/widgets/dock_contour_painter.dart';
+import 'package:flauncher/sgalfa/retro.dart';
+import 'package:flauncher/sgalfa/sg_home_widgets.dart';
 import 'package:flauncher/widgets/launcher_alternative_view.dart';
 import 'package:flauncher/widgets/focus_aware_app_bar.dart';
 import 'package:flauncher/widgets/wallpaper_video_background.dart';
@@ -298,6 +299,8 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
                   MediaQuery.of(context).padding.top -
                   kToolbarHeight -
                   (reserveWatchNextSpace ? watchNextSpace : 150),
+              // SG Alfa: zona destacada (saludo, hora y app enfocada) sobre el dock.
+              child: reserveWatchNextSpace ? null : const SgHero(),
             ),
           ),
           if (showWatchNextSection)
@@ -604,17 +607,20 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
     final shadowEnabled = context.select<SettingsService, bool>((s) => s.dockShadowEnabled);
     final isBigPicture = context.select<SettingsService, bool>((s) => s.showWatchNextSection && s.watchNextBigPictureMode);
 
-    const dockBorderRadius = 24.0;
+    const dockBorderRadius = 22.0;
     final borderRadius = BorderRadius.circular(dockBorderRadius);
 
-    final content = CustomPaint(
-      foregroundPainter: const DockContourPainter(radius: dockBorderRadius, strokeWidth: 1.0),
-      child: Container(
+    // SG Alfa: dock de cómic retro (contorno de tinta grueso + sombra dura).
+    final content = Container(
         padding: const EdgeInsets.symmetric(vertical: 5),
+        foregroundDecoration: BoxDecoration(
+          borderRadius: borderRadius,
+          border: Border.all(color: Retro.ink, width: 4),
+        ),
         decoration: BoxDecoration(
           color: darkBackground
-              ? Colors.black.withValues(alpha: 0.35)
-              : (isBigPicture ? Colors.white.withValues(alpha: 0.16) : Colors.white.withValues(alpha: 0.1)),
+              ? Retro.night.withValues(alpha: 0.85)
+              : Retro.cream.withValues(alpha: isBigPicture ? 0.92 : 0.88),
           borderRadius: borderRadius,
         ),
         child: CategoryCleanRow(
@@ -624,16 +630,14 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
           scrollAlignment: 1.0,
           onAppFocused: _onHomeSectionFocused,
         ),
-      ),
-    );
+      );
 
     return Center(
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: borderRadius,
-          boxShadow: shadowEnabled
-              ? [BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 20, spreadRadius: 2)]
-              : null,
+          // SG Alfa: sombra dura de cómic (la opción «sombra» la hace más marcada).
+          boxShadow: [BoxShadow(color: Retro.ink, offset: shadowEnabled ? const Offset(10, 10) : const Offset(7, 7))],
         ),
         child: ClipRRect(
           borderRadius: borderRadius,

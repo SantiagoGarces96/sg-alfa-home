@@ -24,6 +24,8 @@ import 'package:flauncher/l10n/app_localizations.dart';
 import 'package:flauncher/app_image_type.dart';
 import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/providers/settings_service.dart';
+import 'package:flauncher/providers/launcher_state.dart';
+import 'package:flauncher/sgalfa/retro.dart';
 import 'package:flauncher/widgets/app_card_contour_painter.dart';
 import 'package:flauncher/widgets/application_info_panel.dart';
 import 'package:flauncher/widgets/focus_keyboard_listener.dart';
@@ -219,10 +221,29 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          Material(
+                          // SG Alfa: tarjeta de cómic (contorno de tinta + sombra dura).
+                          AnimatedContainer(
+                            duration: _focusAnimationDuration,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Retro.ink,
+                                  offset: shouldHighlight ? const Offset(7, 7) : const Offset(4, 4),
+                                ),
+                              ],
+                            ),
+                            foregroundDecoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: shouldHighlight ? Retro.mustard : Retro.ink,
+                                width: shouldHighlight ? 5 : 3,
+                              ),
+                            ),
+                            child: Material(
                             borderRadius: BorderRadius.circular(12),
                             clipBehavior: Clip.antiAlias,
-                            elevation: shouldHighlight ? 7 : 4,
+                            elevation: 0,
                             shadowColor: Colors.black,
                             child: Stack(
                               fit: StackFit.expand,
@@ -249,6 +270,7 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
                                 ),
                               ],
                             ),
+                          ),
                           ),
                           if ((shouldHighlight && showFocusBorders) || _moving)
                             if (animationEnabled && !_moving)
@@ -408,6 +430,8 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
     if (!focused) {
       return;
     }
+
+    context.read<LauncherState>().setFocusedAppName(widget.application.name);
 
     final now = DateTime.now();
     if (_lastEnsureVisibleAt != null && now.difference(_lastEnsureVisibleAt!).inMilliseconds < 120) {

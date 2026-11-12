@@ -35,6 +35,16 @@ class LauncherState extends ChangeNotifier
   bool get launcherVisible => _launcherVisible;
   bool get appGridFocused => _appGridFocused;
 
+  // SG Alfa: nombre de la app enfocada (se muestra en grande en el inicio).
+  String? _focusedAppName;
+  String? get focusedAppName => _focusedAppName;
+
+  void setFocusedAppName(String? name) {
+    if (_focusedAppName == name) return;
+    _focusedAppName = name;
+    notifyListeners();
+  }
+
   LauncherState() : _isDefaultLauncher = false, _launcherVisible = true, _appGridFocused = false;
 
   void toggleLauncherVisibility() {

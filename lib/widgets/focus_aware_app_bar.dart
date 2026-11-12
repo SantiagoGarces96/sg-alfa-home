@@ -9,6 +9,7 @@ import 'app_bar_focus_ring.dart';
 import 'daily_wifi_usage_widget.dart';
 import 'date_time_widget.dart';
 import 'network_widget.dart';
+import '../sgalfa/sg_home_widgets.dart';
 
 class FocusAwareAppBar extends StatefulWidget implements PreferredSizeWidget
 {
@@ -97,6 +98,9 @@ class FocusAwareAppBarState extends State<FocusAwareAppBar>
           title: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // SG Alfa: marca
+              const SgBrandBadge(),
+              const SizedBox(width: 18),
               // Settings button
               AppBarFocusRing(
                 focusNode: _settingsFocusNode,
@@ -137,6 +141,11 @@ class FocusAwareAppBarState extends State<FocusAwareAppBar>
           ),
           // Right side: Date/Time only
           actions: [
+            // SG Alfa: estado del bloqueo de anuncios
+            const Padding(
+              padding: EdgeInsets.only(top: 6),
+              child: SgProtectionChip(),
+            ),
             Padding(
               padding: const EdgeInsets.only(left: 16, right: 32),
               child: Selector<SettingsService,
