@@ -152,6 +152,7 @@ public class AutoClickService extends AccessibilityService {
     }
 
     private void perform(Macros.Macro m, Object hit) {
+        Stats.add(this, Stats.ACTIONS);
         switch (m.action) {
             case "BACK":
                 performGlobalAction(GLOBAL_ACTION_BACK);

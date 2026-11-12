@@ -35,6 +35,7 @@ import 'package:flauncher/widgets/cached_blur_backdrop.dart';
 import 'package:flauncher/widgets/category_clean_row.dart';
 import 'package:flauncher/widgets/category_row.dart';
 import 'package:flauncher/sgalfa/retro.dart';
+import 'package:flauncher/sgalfa/sg_focus.dart';
 import 'package:flauncher/sgalfa/sg_home_widgets.dart';
 import 'package:flauncher/widgets/launcher_alternative_view.dart';
 import 'package:flauncher/widgets/focus_aware_app_bar.dart';
@@ -74,6 +75,7 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     FLauncherChannel.setHomePressedHandler(_onHomePressed);
+    SgFocus.focusSettings = () => _appBarKey.currentState?.focusSettings();
   }
 
   @override
@@ -96,7 +98,10 @@ class _FLauncherState extends State<FLauncher> with WidgetsBindingObserver {
   Widget build(BuildContext context) => Actions(
     actions: <Type, Action<Intent>>{
       MoveFocusToSettingsIntent: CallbackAction<MoveFocusToSettingsIntent>(
-        onInvoke: (_) => _appBarKey.currentState?.focusSettings(),
+        // SG Alfa: si hay sugerencia («A esta hora sueles ver…»), primero va a ella.
+        onInvoke: (_) => SgFocus.suggestionAvailable
+            ? SgFocus.suggestion.requestFocus()
+            : _appBarKey.currentState?.focusSettings(),
       ),
     },
     child: FocusTraversalGroup(

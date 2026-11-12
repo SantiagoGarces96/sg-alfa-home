@@ -43,6 +43,24 @@ public final class ProtectionChannel {
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                         result.success(true);
                         break;
+                    case "getToday": {
+                        // En otro hilo: leer el historial de uso puede tardar un poco.
+                        new Thread(() -> {
+                            Map<String, Object> t = new HashMap<>();
+                            t.put("ads", Stats.get(activity, Stats.ADS));
+                            t.put("actions", Stats.get(activity, Stats.ACTIONS));
+                            t.put("adblock", DnsBlockVpnService.isRunning());
+                            t.put("automation", AutoClickService.isEnabled(activity));
+                            Map<String, Object> s = null;
+                            try {
+                                s = Habits.suggestion(activity);
+                            } catch (Exception ignored) {
+                            }
+                            t.put("suggestion", s);
+                            activity.runOnUiThread(() -> result.success(t));
+                        }, "sgalfa-today").start();
+                        break;
+                    }
                     case "getMacrosFull":
                         result.success(macrosFull(AutoClickService.load(activity)));
                         break;

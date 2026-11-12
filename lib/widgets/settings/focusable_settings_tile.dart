@@ -59,21 +59,17 @@ class FocusableSettingsTile extends StatelessWidget {
                   curve: Curves.easeOutCubic,
                   width: SettingsStyle.iconChipSize,
                   height: SettingsStyle.iconChipSize,
+                  // SG Alfa: chapita de cómic (mostaza/crema con contorno de tinta).
                   decoration: BoxDecoration(
-                    color: highlighted
-                        ? accentColor.withValues(alpha: 0.22)
-                        : Colors.white.withValues(alpha: 0.06),
+                    color: highlighted ? const Color(0xFFFFF1D0) : const Color(0xFFFFB703),
                     borderRadius: BorderRadius.circular(SettingsStyle.iconChipRadius),
-                    border: Border.all(
-                      color: highlighted
-                          ? Colors.white.withValues(alpha: 0.18)
-                          : Colors.white.withValues(alpha: 0.04),
-                    ),
+                    border: Border.all(color: const Color(0xFF1D1A16), width: 2.5),
+                    boxShadow: const [BoxShadow(color: Color(0xFF1D1A16), offset: Offset(2, 2))],
                   ),
                   child: IconTheme.merge(
-                    data: IconThemeData(
+                    data: const IconThemeData(
                       size: SettingsStyle.iconSize,
-                      color: highlighted ? Colors.white : Colors.white.withValues(alpha: 0.78),
+                      color: Color(0xFF1D1A16),
                     ),
                     child: Center(child: leading!),
                   ),

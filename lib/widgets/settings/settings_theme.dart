@@ -290,64 +290,28 @@ class SettingsSurfacePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (size.isEmpty) return;
-
+    // SG Alfa: fila de cómic retro. Sombra dura de tinta, contorno grueso y,
+    // al enfocar, relleno del color de acento con borde mostaza.
+    const ink = Color(0xFF1D1A16);
+    const rest = Color(0xFF3B3150);
+    const mustard = Color(0xFFFFB703);
+    final t = progress.clamp(0.0, 1.0);
     final rect = Offset.zero & size;
     final rrect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
-    final t = progress.clamp(0.0, 1.0);
+    final shadow = 5.0 - 2.0 * t;
 
-    // Glass fill: slightly brighter when highlighted.
+    canvas.drawRRect(rrect.shift(Offset(shadow, shadow)), Paint()..color = ink);
     canvas.drawRRect(
       rrect,
+      Paint()..color = Color.lerp(rest, Color.lerp(accentColor, ink, 0.15)!, t)!,
+    );
+    canvas.drawRRect(
+      rrect.deflate(1.5),
       Paint()
-        ..color = Color.lerp(
-          SettingsStyle.rowRestFill,
-          SettingsStyle.rowFocusFill,
-          t,
-        )!,
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3
+        ..color = Color.lerp(ink, mustard, t)!,
     );
-
-    // Accent wash, so focus picks up the user's accent color.
-    if (t > 0.001) {
-      canvas.drawRRect(
-        rrect,
-        Paint()..color = accentColor.withValues(alpha: 0.12 * t),
-      );
-    }
-
-    // Specular hairline: neutral at rest, white -> accent -> white on focus.
-    final borderRect = rect.deflate(0.5);
-    final borderRRect = RRect.fromRectAndRadius(
-      borderRect,
-      Radius.circular((radius - 0.5).clamp(0.0, double.infinity)),
-    );
-    final white = Colors.white;
-    final borderPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        stops: const [0.0, 0.45, 1.0],
-        colors: [
-          Color.lerp(
-            white.withValues(alpha: 0.07),
-            white.withValues(alpha: 0.62),
-            t,
-          )!,
-          Color.lerp(
-            white.withValues(alpha: 0.04),
-            accentColor.withValues(alpha: 0.55),
-            t,
-          )!,
-          Color.lerp(
-            white.withValues(alpha: 0.07),
-            white.withValues(alpha: 0.26),
-            t,
-          )!,
-        ],
-      ).createShader(borderRect);
-
-    canvas.drawRRect(borderRRect, borderPaint);
   }
 
   @override

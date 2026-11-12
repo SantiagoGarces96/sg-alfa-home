@@ -5,8 +5,10 @@
 
 import 'dart:async';
 
+import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/providers/launcher_state.dart';
 import 'package:flauncher/sgalfa/retro.dart';
+import 'package:flauncher/sgalfa/sg_focus.dart';
 import 'package:flauncher/widgets/settings/settings_panel.dart';
 import 'package:flauncher/widgets/settings/sg_alfa_protection_page.dart';
 import 'package:flutter/material.dart';
@@ -149,7 +151,10 @@ class _SgHeroState extends State<SgHero> {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(48, 0, 48, 22),
-      child: Column(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+      Expanded(child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -177,7 +182,6 @@ class _SgHeroState extends State<SgHero> {
                 ? const SizedBox(height: 44, key: ValueKey('none'))
                 : Row(
                     key: ValueKey(focusedApp),
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -185,10 +189,136 @@ class _SgHeroState extends State<SgHero> {
                         child: Text(focusedApp, style: Retro.title(24)),
                       ),
                       const SizedBox(width: 14),
-                      Text('OK para abrir  ·  mantén OK para opciones', style: Retro.body(15)),
+                      Flexible(
+                        child: Text('OK para abrir  ·  mantén OK para opciones',
+                            maxLines: 2, overflow: TextOverflow.ellipsis, style: Retro.body(15)),
+                      ),
                     ],
                   ),
           ),
+        ],
+      )),
+      const SizedBox(width: 24),
+      const SgTodayCard(),
+        ],
+      ),
+    );
+  }
+}
+
+/// «TU TELE HOY»: anuncios bloqueados, avisos cerrados y la app que sueles ver a esta hora.
+class SgTodayCard extends StatefulWidget {
+  const SgTodayCard({super.key});
+
+  @override
+  State<SgTodayCard> createState() => _SgTodayCardState();
+}
+
+class _SgTodayCardState extends State<SgTodayCard> with WidgetsBindingObserver {
+  Map<dynamic, dynamic>? _today;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _refresh();
+    _timer = Timer.periodic(const Duration(seconds: 30), (_) => _refresh());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refresh();
+  }
+
+  Future<void> _refresh() async {
+    try {
+      final t = await _protection.invokeMethod('getToday');
+      if (mounted && t is Map) setState(() => _today = t);
+    } catch (_) {}
+  }
+
+  Widget _stat(IconData icon, String number, String label, Color color, bool on) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: Retro.box(color: on ? color : const Color(0xFFB9B4A8), radius: 9, border: 2.5, shadow: 2),
+            child: Icon(icon, size: 20, color: Retro.ink),
+          ),
+          const SizedBox(width: 10),
+          Text(number, style: Retro.title(26)),
+          const SizedBox(width: 8),
+          Text(label, style: Retro.body(14)),
+        ],
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final t = _today;
+    if (t == null) return const SizedBox.shrink();
+    final adblock = t['adblock'] == true;
+    final automation = t['automation'] == true;
+    final suggestion = t['suggestion'];
+
+    return Container(
+      width: 400,
+      padding: const EdgeInsets.fromLTRB(18, 14, 18, 16),
+      decoration: Retro.box(color: Retro.night.withValues(alpha: 0.88), shadow: 6),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const RetroSticker('TU TELE HOY', color: Retro.teal),
+          const SizedBox(height: 12),
+          _stat(Icons.shield, '${t['ads'] ?? 0}', adblock ? 'anuncios bloqueados' : 'bloqueo apagado',
+              const Color(0xFF8FD694), adblock),
+          const SizedBox(height: 8),
+          _stat(Icons.bolt, '${t['actions'] ?? 0}', automation ? 'avisos cerrados solos' : 'automatizaciones apagadas',
+              Retro.mustard, automation),
+          if (suggestion is Map) ...[
+            const SizedBox(height: 14),
+            Text('A ESTA HORA SUELES VER', style: Retro.body(13, color: Retro.mustard, weight: FontWeight.w800)),
+            const SizedBox(height: 6),
+            Focus(
+              canRequestFocus: false,
+              skipTraversal: true,
+              // Desde la sugerencia, «arriba» va a los ajustes.
+              onKeyEvent: (node, event) {
+                if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                  SgFocus.focusSettings?.call();
+                  return KeyEventResult.handled;
+                }
+                return KeyEventResult.ignored;
+              },
+              child: RetroButton(
+              focusNode: SgFocus.suggestion,
+              color: Retro.red,
+              focusColor: Retro.mustard,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              onPressed: () {
+                final app = context.read<AppsService>().getApplication('${suggestion['packageName']}');
+                if (app != null) context.read<AppsService>().launchApp(app);
+              },
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                const Icon(Icons.play_arrow_rounded, size: 26),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text('${suggestion['name']}',
+                      overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 18)),
+                ),
+              ]),
+            ),
+            ),
+          ],
         ],
       ),
     );

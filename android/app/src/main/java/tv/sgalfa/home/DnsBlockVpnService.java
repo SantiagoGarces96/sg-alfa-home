@@ -157,9 +157,14 @@ public class DnsBlockVpnService extends VpnService {
                 byte[] query = slice(packet, ihl + 8, len);
 
                 String host = qname(query);
-                byte[] answer = (host != null && isBlocked(host))
-                        ? buildBlockedDns(query)
-                        : forward(socket, dstIp, query);
+                byte[] answer;
+                if (host != null && isBlocked(host)) {
+                    answer = buildBlockedDns(query);
+                    Stats.add(this, Stats.ADS);
+                } else {
+                    answer = forward(socket, dstIp, query);
+                    if (answer != null && isNullAnswer(answer)) Stats.add(this, Stats.ADS); // filtrado por AdGuard
+                }
                 if (answer != null) {
                     output.write(buildUdpIpv4(dstIp, srcIp, dstPort, srcPort, answer));
                 }
@@ -254,6 +259,34 @@ public class DnsBlockVpnService extends VpnService {
         while (dot >= 0 && dot + 1 < host.length()) {
             if (list.contains(host.substring(dot + 1))) return true;
             dot = host.indexOf('.', dot + 1);
+        }
+        return false;
+    }
+
+    /** ¿La respuesta apunta a 0.0.0.0? (así responde AdGuard DNS cuando bloquea). */
+    static boolean isNullAnswer(byte[] dns) {
+        if (dns.length < 12) return false;
+        int ancount = ((dns[6] & 0xFF) << 8) | (dns[7] & 0xFF);
+        if (ancount == 0) return false;
+        int i = questionEnd(dns);
+        if (i < 0) return false;
+        for (int a = 0; a < ancount && i < dns.length; a++) {
+            // nombre: puntero (2 bytes) o etiquetas
+            if ((dns[i] & 0xC0) == 0xC0) {
+                i += 2;
+            } else {
+                while (i < dns.length && dns[i] != 0) i += (dns[i] & 0xFF) + 1;
+                i++;
+            }
+            if (i + 10 > dns.length) return false;
+            int type = ((dns[i] & 0xFF) << 8) | (dns[i + 1] & 0xFF);
+            int rdlen = ((dns[i + 8] & 0xFF) << 8) | (dns[i + 9] & 0xFF);
+            i += 10;
+            if (i + rdlen > dns.length) return false;
+            if (type == 1 && rdlen == 4) {
+                return dns[i] == 0 && dns[i + 1] == 0 && dns[i + 2] == 0 && dns[i + 3] == 0;
+            }
+            i += rdlen;
         }
         return false;
     }

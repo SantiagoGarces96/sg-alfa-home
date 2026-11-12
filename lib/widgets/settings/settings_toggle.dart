@@ -12,8 +12,8 @@ class SettingsSwitch extends StatelessWidget {
   final Color accentColor;
   final Duration duration;
 
-  static const double _width = 42;
-  static const double _height = 24;
+  static const double _width = 52;
+  static const double _height = 28;
   static const double _knob = 18;
 
   /// Used instead of a white knob on light accent colours (white, yellow,
@@ -32,7 +32,7 @@ class SettingsSwitch extends StatelessWidget {
     // The knob must stay readable whatever accent the user picked.
     final lightTrack = accentColor.computeLuminance() > 0.55;
     final trackColor =
-        value ? accentColor : Colors.white.withValues(alpha: 0.16);
+        value ? const Color(0xFF8FD694) : const Color(0xFFB9B4A8); // SG Alfa: verde = sí, gris = no
     final borderColor = value
         ? (lightTrack
             ? Colors.black.withValues(alpha: 0.18)
@@ -50,7 +50,7 @@ class SettingsSwitch extends StatelessWidget {
         decoration: BoxDecoration(
           color: trackColor,
           borderRadius: BorderRadius.circular(_height / 2),
-          border: Border.all(color: borderColor),
+          border: Border.all(color: const Color(0xFF1D1A16), width: 2.5), // SG Alfa: contorno de tinta
         ),
         child: AnimatedAlign(
           duration: duration,
@@ -63,9 +63,10 @@ class SettingsSwitch extends StatelessWidget {
             height: _knob,
             decoration: BoxDecoration(
               color: value
-                  ? (lightTrack ? _darkKnob : Colors.white)
-                  : Colors.white.withValues(alpha: 0.78),
+                  ? const Color(0xFFFFF1D0)
+                  : const Color(0xFFFFF1D0),
               shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFF1D1A16), width: 2),
             ),
           ),
         ),
